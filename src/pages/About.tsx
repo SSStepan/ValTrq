@@ -50,9 +50,10 @@ export default function About() {
       </Section>
 
       <Section title="Contact">
-        <div className="text-text-primary">
-          <div><span className="text-text-secondary uppercase tracking-wider text-xs mr-2">Email</span> contact@valtrq.app</div>
-          <div><span className="text-text-secondary uppercase tracking-wider text-xs mr-2">Project</span> https://valtrq.app</div>
+        <div className="text-text-primary space-y-1">
+          <div><span className="text-text-secondary uppercase tracking-wider text-xs mr-2">Email</span> deburuni@mail.ru</div>
+          <div><span className="text-text-secondary uppercase tracking-wider text-xs mr-2">Discord</span> cprcorn</div>
+          <div><span className="text-text-secondary uppercase tracking-wider text-xs mr-2">Project</span> https://ssstepan.github.io/ValTrq/</div>
         </div>
       </Section>
 
