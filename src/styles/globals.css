@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #0f1923;
+  --bg-secondary: #1a2634;
+  --bg-tertiary: #243040;
+  --accent: #ff4655;
+  --accent-hover: #ff6b77;
+  --text-primary: #ece8e1;
+  --text-secondary: #8b978f;
+  --win: #17b36a;
+  --loss: #e5484d;
+  --draw: #f5a623;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.clip-angled {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+}
+
+.clip-angled-sm {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+}
+
+@keyframes valtrq-fadein {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes valtrq-pop {
+  0% { opacity: 0; transform: scale(0.8); }
+  60% { opacity: 1; transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+@keyframes valtrq-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fadein {
+  animation: valtrq-fadein 0.4s ease-out both;
+}
+
+.animate-pop {
+  animation: valtrq-pop 0.5s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(36, 48, 64, 0.5) 0%,
+    rgba(56, 72, 92, 0.8) 50%,
+    rgba(36, 48, 64, 0.5) 100%
+  );
+  background-size: 200% 100%;
+  animation: valtrq-shimmer 1.6s ease-in-out infinite;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
