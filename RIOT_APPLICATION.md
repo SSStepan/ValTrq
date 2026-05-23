@@ -11,7 +11,7 @@ performance tracking.
 https://valtrq.app (placeholder — to be replaced before submission)
 
 ## Contact
-- Email: contact@valtrq.app
+- Email: deburuni@mail.ru
 - Discord: valtrq#0001 (placeholder)
 
 ---
