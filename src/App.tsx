@@ -1,13 +1,13 @@
+import { useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams, Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import SearchBar from '@/components/SearchBar';
 import PlayerCard from '@/components/PlayerCard';
 import RankHistory from '@/components/RankHistory';
 import MatchList from '@/components/MatchList';
-import RSOLogin from '@/components/RSOLogin';
-import Disclaimer from '@/components/Disclaimer';
 import Settings from '@/pages/Settings';
 import About from '@/pages/About';
+import Overlay from '@/pages/Overlay';
 import { PlayerCardSkeleton, RankHistorySkeleton, MatchCardSkeleton } from '@/components/skeletons';
 import FavoritesList from '@/components/FavoritesList';
 import { usePlayer } from '@/hooks/usePlayer';
@@ -16,45 +16,67 @@ import { MOCK_ACCOUNTS } from '@/mock/data';
 function SearchPage() {
   const nav = useNavigate();
   return (
-    <div className="flex flex-col gap-8">
-      <div className="text-center mt-4">
-        <h1 className="text-4xl font-bold uppercase tracking-widest">
-          Track your <span className="text-accent">Valorant</span> career
-        </h1>
-        <p className="text-text-secondary mt-2 max-w-xl mx-auto">
-          Rank, MMR history, and match stats — search any Riot ID to begin.
-        </p>
-      </div>
+    <div className="flex flex-col gap-10">
+      <section className="relative grid md:grid-cols-[1.4fr_1fr] gap-8 items-end pt-6">
+        <div>
+          <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-brutal text-accent font-bold mb-4">
+            <span className="w-6 h-px bg-accent" />
+            Riot ID Lookup
+          </div>
+          <h1 className="font-display text-6xl md:text-8xl uppercase leading-[0.85] tracking-tight">
+            Track your
+            <br />
+            <span className="text-accent">Valorant</span> career
+          </h1>
+          <p className="text-text-secondary mt-5 max-w-md text-base leading-relaxed">
+            Rank, RR trajectory, and per-match stats. Search any Riot ID and pin players to your favorites for quick access.
+          </p>
+        </div>
+        <div className="hidden md:flex flex-col items-end gap-2 font-mono text-[11px] uppercase tracking-brutal text-text-muted">
+          <div className="flex items-center gap-2">
+            <span>Mock Dataset</span>
+            <span className="w-1.5 h-1.5 bg-win" />
+          </div>
+          <div>Prototype Build</div>
+        </div>
+      </section>
 
       <SearchBar onSearch={(n, t, r) => nav(`/player/${encodeURIComponent(n)}/${encodeURIComponent(t)}?region=${r}`)} />
 
-      <div className="grid md:grid-cols-[1fr_auto_1fr] items-center gap-3 text-text-secondary text-xs uppercase tracking-widest">
-        <div className="h-px bg-bg-tertiary" />
-        <div>or</div>
-        <div className="h-px bg-bg-tertiary" />
-      </div>
-
-      <div className="flex flex-col gap-3 max-w-md mx-auto w-full">
-        <RSOLogin />
-        <Disclaimer />
-      </div>
-
-      <div className="grid md:grid-cols-[1fr_320px] gap-6">
-        <div className="bg-bg-secondary border border-bg-tertiary p-5">
-          <div className="text-xs uppercase tracking-widest text-text-secondary mb-3">Try a sample profile</div>
-          <div className="grid sm:grid-cols-3 gap-3">
+      <div className="grid md:grid-cols-[1fr_340px] gap-6">
+        <section className="bg-bg-secondary border border-border">
+          <div className="p-5 border-b border-border flex items-end justify-between">
+            <div>
+              <div className="text-[10px] uppercase tracking-brutal text-text-muted">Demo</div>
+              <h2 className="font-display text-2xl uppercase tracking-brutal leading-none mt-0.5">
+                Sample Profiles
+              </h2>
+            </div>
+            <span className="text-[10px] uppercase tracking-brutal text-text-muted font-mono">
+              {MOCK_ACCOUNTS.length} Loaded
+            </span>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-px bg-border">
             {MOCK_ACCOUNTS.map(a => (
               <Link
                 key={a.puuid}
                 to={`/player/${encodeURIComponent(a.gameName)}/${encodeURIComponent(a.tagLine)}?region=${a.region}`}
-                className="bg-bg-tertiary hover:bg-bg-primary border border-bg-tertiary hover:border-accent transition-colors p-4 block"
+                className="group relative bg-bg-secondary hover:bg-bg-tertiary transition-colors p-5 block"
               >
-                <div className="font-bold">{a.gameName}<span className="text-text-secondary font-mono ml-1">#{a.tagLine}</span></div>
-                <div className="text-xs uppercase tracking-wider text-text-secondary mt-1">Level {a.accountLevel} · {a.region.toUpperCase()}</div>
+                <div className="absolute top-0 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all duration-300" />
+                <div className="font-display text-xl uppercase tracking-brutal leading-none truncate">
+                  {a.gameName}
+                </div>
+                <div className="text-accent font-mono text-sm mt-1">#{a.tagLine}</div>
+                <div className="text-[10px] uppercase tracking-brutal text-text-muted mt-3 font-mono">
+                  Lvl {a.accountLevel}
+                  <span className="mx-1.5 text-border">/</span>
+                  {a.region.toUpperCase()}
+                </div>
               </Link>
             ))}
           </div>
-        </div>
+        </section>
 
         <FavoritesList />
       </div>
@@ -64,12 +86,16 @@ function SearchPage() {
 
 function PlayerNotFound({ name, tag }: { name: string; tag: string }) {
   return (
-    <div className="bg-bg-secondary border border-bg-tertiary p-12 text-center clip-angled">
-      <div className="text-6xl text-accent/40 font-bold uppercase tracking-widest">404</div>
-      <div className="mt-3 text-xl font-bold uppercase tracking-widest">Player not found</div>
-      <div className="text-text-secondary mt-2">
-        We couldn't find <span className="font-mono text-text-primary">{name}#{tag}</span>.
-        Check the Riot ID and region, then try again.
+    <div className="relative bg-bg-secondary border border-border p-16 text-center corner-accent">
+      <div className="font-display text-8xl text-accent/30 uppercase tracking-tight leading-none">
+        404
+      </div>
+      <div className="mt-4 font-display text-3xl uppercase tracking-brutal">
+        Player Not Found
+      </div>
+      <div className="text-text-secondary mt-3 max-w-md mx-auto">
+        We could not locate <span className="font-mono text-text-primary">{name}#{tag}</span>.
+        Verify the Riot ID and region, then try again.
       </div>
     </div>
   );
@@ -112,7 +138,21 @@ function PlayerPage() {
   );
 }
 
-export default function App() {
+function TrackerShell() {
+  const nav = useNavigate();
+  useEffect(() => {
+    if (!window.valtrq || window.valtrq.isOverlay) return;
+    const off = window.valtrq.onNavigate(route => nav(route));
+    // Replay user's stored hotkey to main on startup so the binding survives restart.
+    try {
+      const stored = localStorage.getItem('valtrq:hotkey');
+      if (stored) window.valtrq.hotkey.set(stored);
+    } catch {
+      // ignore storage failures
+    }
+    return () => off?.();
+  }, [nav]);
+
   return (
     <Layout>
       <Routes>
@@ -120,7 +160,19 @@ export default function App() {
         <Route path="/player/:name/:tag" element={<PlayerPage />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/about" element={<About />} />
+        <Route path="/overlay" element={<Overlay />} />
       </Routes>
     </Layout>
   );
+}
+
+export default function App() {
+  if (window.valtrq?.isOverlay) {
+    return (
+      <Routes>
+        <Route path="*" element={<Overlay />} />
+      </Routes>
+    );
+  }
+  return <TrackerShell />;
 }

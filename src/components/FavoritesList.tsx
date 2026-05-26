@@ -17,38 +17,50 @@ export default function FavoritesList() {
   const { favorites, remove } = useFavorites();
 
   return (
-    <div className="bg-bg-secondary border border-bg-tertiary p-5">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="uppercase tracking-widest text-sm font-bold text-text-secondary">Favorites</h2>
-        <span className="text-xs text-text-secondary font-mono">{favorites.length}</span>
+    <section className="bg-bg-secondary border border-border">
+      <div className="flex items-center justify-between p-4 border-b border-border">
+        <div>
+          <div className="text-[10px] uppercase tracking-brutal text-text-muted">Saved</div>
+          <h2 className="font-display text-xl uppercase tracking-brutal leading-none mt-0.5">
+            Favorites
+          </h2>
+        </div>
+        <span className="font-mono text-2xl text-accent font-bold leading-none">
+          {String(favorites.length).padStart(2, '0')}
+        </span>
       </div>
 
       {favorites.length === 0 ? (
-        <div className="text-sm text-text-secondary text-center py-6">
-          No favorites yet. Open a player profile and tap the ★ to save them.
+        <div className="text-sm text-text-secondary text-center py-10 px-4">
+          Save a player from their profile to pin them here.
         </div>
       ) : (
-        <ul className="flex flex-col gap-1.5">
+        <ul className="divide-y divide-border">
           {favorites.map(f => (
             <li key={f.puuid} className="group">
-              <div className="flex items-center gap-3 bg-bg-tertiary hover:bg-bg-primary border border-transparent hover:border-accent transition-colors px-3 py-2">
-                <RankIcon tier={f.rankTier} className="w-8 h-8 flex-shrink-0" />
+              <div className="flex items-center gap-3 hover:bg-bg-tertiary transition-colors px-4 py-3 relative">
+                <div className="absolute inset-y-0 left-0 w-0.5 bg-accent scale-y-0 group-hover:scale-y-100 transition-transform origin-center" />
+                <RankIcon tier={f.rankTier} className="w-9 h-9 flex-shrink-0" />
                 <Link
                   to={`/player/${encodeURIComponent(f.gameName)}/${encodeURIComponent(f.tagLine)}?region=${f.region}`}
                   className="flex-1 min-w-0"
                 >
                   <div className="font-bold truncate">
                     {f.gameName}
-                    <span className="text-text-secondary font-mono ml-1">#{f.tagLine}</span>
+                    <span className="text-text-muted font-mono ml-1">#{f.tagLine}</span>
                   </div>
-                  <div className="text-xs text-text-secondary truncate">
-                    {f.rankName} · {f.rr} RR · {timeAgo(f.lastActivity)}
+                  <div className="text-[11px] uppercase tracking-brutal text-text-muted truncate mt-0.5">
+                    <span className="text-text-secondary">{f.rankName}</span>
+                    <span className="mx-1.5">/</span>
+                    <span className="font-mono text-accent">{f.rr}</span> RR
+                    <span className="mx-1.5">/</span>
+                    <span className="font-mono">{timeAgo(f.lastActivity)}</span>
                   </div>
                 </Link>
                 <button
                   onClick={() => remove(f.puuid)}
-                  aria-label="Remove"
-                  className="opacity-0 group-hover:opacity-100 text-text-secondary hover:text-loss transition-all text-xs uppercase tracking-widest px-2"
+                  aria-label="Remove from favorites"
+                  className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-loss transition-all text-xs uppercase tracking-brutal px-2"
                 >
                   ✕
                 </button>
@@ -57,6 +69,6 @@ export default function FavoritesList() {
           ))}
         </ul>
       )}
-    </div>
+    </section>
   );
 }

@@ -1,79 +1,123 @@
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useEffect, useState } from 'react';
+import HotkeyCapture, { loadStoredHotkey, saveStoredHotkey } from '@/components/HotkeyCapture';
 
 export default function Settings() {
-  const { account, isPublic, setPublic, signOut } = useAuth();
-  const nav = useNavigate();
+  const [hotkey, setHotkey] = useState<string>('');
+  const [defaultHotkey, setDefaultHotkey] = useState<string>('CommandOrControl+Shift+V');
+  const [hotkeyError, setHotkeyError] = useState<string | null>(null);
 
-  function disconnect() {
-    signOut();
-    nav('/');
+  useEffect(() => {
+    const v = window.valtrq;
+    if (!v) {
+      setHotkey(loadStoredHotkey() ?? 'CommandOrControl+Shift+V');
+      return;
+    }
+    v.hotkey.default().then(setDefaultHotkey);
+    const stored = loadStoredHotkey();
+    if (stored) {
+      v.hotkey.set(stored).then(({ ok, current }) => {
+        setHotkey(current);
+        if (!ok) setHotkeyError('Stored hotkey could not be registered');
+      });
+    } else {
+      v.hotkey.get().then(setHotkey);
+    }
+  }, []);
+
+  async function applyHotkey(next: string) {
+    setHotkeyError(null);
+    const v = window.valtrq;
+    if (!v) {
+      setHotkey(next);
+      saveStoredHotkey(next);
+      return;
+    }
+    const { ok, current } = await v.hotkey.set(next);
+    setHotkey(current);
+    if (ok) saveStoredHotkey(next);
+    else setHotkeyError('That combination is already in use by another app');
+  }
+
+  function resetHotkey() {
+    applyHotkey(defaultHotkey);
+  }
+
+  function clearFavorites() {
+    if (!confirm('Remove all pinned players from favorites?')) return;
+    try {
+      localStorage.removeItem('valtrq:favorites');
+      location.reload();
+    } catch {
+      // ignore
+    }
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
-      <div>
-        <h1 className="text-3xl font-bold uppercase tracking-widest">Settings</h1>
-        <p className="text-text-secondary mt-1">Manage your Riot connection and data sharing preferences.</p>
-      </div>
+    <div className="flex flex-col gap-8 max-w-2xl">
+      <header>
+        <div className="text-[10px] uppercase tracking-brutal text-accent font-bold">Preferences</div>
+        <h1 className="font-display text-5xl uppercase tracking-brutal leading-none mt-1">
+          Settings
+        </h1>
+        <p className="text-text-secondary mt-3">
+          Configure the overlay hotkey and local data. ValTrq stores everything on this machine
+          and never sends your data anywhere.
+        </p>
+      </header>
 
-      <section className="bg-bg-secondary border border-bg-tertiary p-5">
-        <h2 className="uppercase tracking-widest text-sm font-bold text-text-secondary mb-3">Account</h2>
-        {account ? (
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-bold text-lg">
-                {account.gameName}
-                <span className="text-text-secondary font-mono ml-2">#{account.tagLine}</span>
+      <section className="bg-bg-secondary border border-border">
+        <div className="px-5 py-3 border-b border-border">
+          <h2 className="font-display text-lg uppercase tracking-brutal leading-none">Overlay</h2>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex-1 min-w-[200px]">
+              <div className="font-bold">Toggle hotkey</div>
+              <div className="text-sm text-text-secondary mt-1">
+                Global shortcut that shows or hides the overlay window. Works even while Valorant
+                has focus.
               </div>
-              <div className="text-xs uppercase tracking-wider text-text-secondary mt-1">
-                Region {account.region.toUpperCase()} · Level {account.accountLevel}
+              {hotkeyError && (
+                <div className="text-xs text-loss mt-2 font-mono">{hotkeyError}</div>
+              )}
+            </div>
+            <HotkeyCapture
+              value={hotkey}
+              onChange={applyHotkey}
+              onReset={resetHotkey}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-bg-secondary border border-border">
+        <div className="px-5 py-3 border-b border-border">
+          <h2 className="font-display text-lg uppercase tracking-brutal leading-none">Local Data</h2>
+        </div>
+        <div className="p-5">
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex-1">
+              <div className="font-bold">Favorites</div>
+              <div className="text-sm text-text-secondary mt-1">
+                Pinned players are saved to this machine only. Clearing wipes the list.
               </div>
             </div>
             <button
-              onClick={disconnect}
-              className="bg-loss/10 border border-loss text-loss hover:bg-loss hover:text-white transition-colors px-4 py-2 text-sm uppercase tracking-widest font-bold"
+              onClick={clearFavorites}
+              className="bg-transparent border border-loss text-loss hover:bg-loss hover:text-white transition-colors px-5 py-2.5 text-xs uppercase tracking-brutal font-bold"
             >
-              Disconnect Riot Account
+              Clear Favorites
             </button>
           </div>
-        ) : (
-          <div className="text-text-secondary">Not signed in.</div>
-        )}
-      </section>
 
-      <section className="bg-bg-secondary border border-bg-tertiary p-5">
-        <h2 className="uppercase tracking-widest text-sm font-bold text-text-secondary mb-4">Privacy</h2>
-
-        <label className="flex items-start justify-between gap-4 cursor-pointer">
-          <div>
-            <div className="font-bold">Make my profile public</div>
-            <div className="text-sm text-text-secondary mt-0.5">
-              Other ValTrq users can search and view your rank, MMR history and matches.
+          <div className="text-xs text-text-secondary mt-6 leading-relaxed border-t border-border pt-4">
+            <div className="text-[10px] uppercase tracking-brutal text-text-primary font-bold mb-2">
+              No Account, No Server
             </div>
+            ValTrq has no sign-in and no backend database. All data you see comes from public
+            Valorant endpoints lookup by Riot ID, or from the local Valorant client running on
+            this machine. Nothing leaves your computer except the API calls themselves.
           </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={isPublic}
-            onClick={() => setPublic(!isPublic)}
-            className={`relative w-12 h-6 transition-colors flex-shrink-0 ${
-              isPublic ? 'bg-accent' : 'bg-bg-tertiary'
-            }`}
-          >
-            <span
-              className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white transition-transform ${
-                isPublic ? 'translate-x-6' : ''
-              }`}
-            />
-          </button>
-        </label>
-
-        <div className="text-xs text-text-secondary mt-5 leading-relaxed border-t border-bg-tertiary pt-4">
-          <strong className="text-text-primary uppercase tracking-wider block mb-1">Your data</strong>
-          ValTrq stores only the data needed to show your stats: Riot ID, PUUID, rank, MMR history and match summaries.
-          We never store credentials. Disconnecting your account removes all locally cached data and revokes the RSO token.
-          You can request full data deletion at any time.
         </div>
       </section>
     </div>

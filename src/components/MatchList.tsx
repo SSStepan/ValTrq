@@ -16,19 +16,33 @@ export default function MatchList({ matches }: { matches: MatchData[] }) {
     [matches, filter]
   );
 
+  const wins = filtered.filter(m => m.playerStats.won).length;
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="uppercase tracking-widest text-sm font-bold text-text-secondary">Recent Matches</h2>
-        <div className="flex gap-1">
+    <section>
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-4">
+        <div>
+          <div className="text-[10px] uppercase tracking-brutal text-text-muted">Activity</div>
+          <h2 className="font-display text-3xl uppercase tracking-brutal leading-none mt-1">
+            Recent Matches
+          </h2>
+          {filtered.length > 0 && (
+            <div className="text-xs text-text-secondary mt-2 font-mono">
+              {wins}W <span className="text-text-muted">/</span>{' '}
+              <span className="text-loss">{filtered.length - wins}L</span>{' '}
+              <span className="text-text-muted">of {filtered.length}</span>
+            </div>
+          )}
+        </div>
+        <div className="flex">
           {FILTERS.map(f => (
             <button
               key={f.value}
               onClick={() => setFilter(f.value)}
-              className={`text-xs px-3 py-1.5 uppercase tracking-wide transition-colors ${
+              className={`text-[11px] px-4 py-2 uppercase tracking-brutal font-bold border-r border-border last:border-r-0 transition-colors ${
                 filter === f.value
                   ? 'bg-accent text-white'
-                  : 'bg-bg-secondary text-text-secondary hover:text-text-primary'
+                  : 'bg-bg-secondary text-text-secondary hover:text-text-primary hover:bg-bg-tertiary'
               }`}
             >
               {f.label}
@@ -38,14 +52,21 @@ export default function MatchList({ matches }: { matches: MatchData[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-bg-secondary border border-bg-tertiary p-8 text-center text-text-secondary">
-          No matches for this filter.
+        <div className="bg-bg-secondary border border-border p-12 text-center">
+          <div className="font-display text-2xl uppercase tracking-brutal text-text-muted">
+            No Matches
+          </div>
+          <div className="text-text-secondary text-sm mt-2">
+            Nothing recorded for this mode yet.
+          </div>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          {filtered.map((m, i) => <MatchCard key={m.matchId} match={m} index={i} />)}
+          {filtered.map((m, i) => (
+            <MatchCard key={m.matchId} match={m} index={i} />
+          ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }

@@ -2,15 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
 import App from './App';
-import { AuthProvider } from '@/context/AuthContext';
 import './styles/globals.css';
+
+if (window.valtrq?.isOverlay) {
+  document.documentElement.classList.add('is-overlay');
+  document.body.classList.add('is-overlay');
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <App />
     </HashRouter>
   </React.StrictMode>
 );

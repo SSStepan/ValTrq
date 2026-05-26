@@ -4,20 +4,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        'bg-primary': '#0f1923',
-        'bg-secondary': '#1a2634',
-        'bg-tertiary': '#243040',
+        'bg-primary': '#0b0f14',
+        'bg-secondary': '#111821',
+        'bg-tertiary': '#1c2733',
+        'bg-elevated': '#243040',
+        border: '#2a3845',
         accent: '#ff4655',
-        'accent-hover': '#ff6b77',
+        'accent-hi': '#ff5e6c',
         'text-primary': '#ece8e1',
         'text-secondary': '#8b978f',
-        win: '#17b36a',
-        loss: '#e5484d',
-        draw: '#f5a623'
+        'text-muted': '#5a6670',
+        win: '#1fc879',
+        loss: '#ff4655',
+        draw: '#f2a23a'
       },
       fontFamily: {
+        display: ['Anton', '"DM Sans"', 'system-ui', 'sans-serif'],
         sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
+      },
+      letterSpacing: {
+        brutal: '0.18em'
       }
     }
   },

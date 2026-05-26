@@ -7,3 +7,5 @@ out
 *.log
 dist-web
 node_modules/.cache
+.agents/
+skills-lock.json
